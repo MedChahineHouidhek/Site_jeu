@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 06, 2023 at 08:34 PM
+-- Generation Time: Oct 06, 2023 at 09:49 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.1.17
 
@@ -37,6 +37,14 @@ CREATE TABLE `addresses` (
   `country` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `addresses`
+--
+
+INSERT INTO `addresses` (`id`, `street_nb`, `street_name`, `city`, `province`, `zip_code`, `country`) VALUES
+(1, 5915, 'Av des erables', 'Montreal', 'Quebec', 'H2G2M6', 'Canada'),
+(2, 7, 'wahet mareth el waha', 'tunis', 'tunis', '2087', 'Tunisie');
+
 -- --------------------------------------------------------
 
 --
@@ -47,7 +55,8 @@ CREATE TABLE `order` (
   `id` int(11) NOT NULL,
   `ref` varchar(40) NOT NULL,
   `date` date NOT NULL,
-  `total` decimal(10,0) NOT NULL
+  `total` decimal(10,0) NOT NULL,
+  `id_user` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -79,6 +88,15 @@ CREATE TABLE `produit` (
   `year` year(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `produit`
+--
+
+INSERT INTO `produit` (`id`, `name`, `qty`, `price`, `url_img`, `description`, `console`, `year`) VALUES
+(1, 'Fifa 19', 100, 60, '', 'fifa', 'pc', '2018'),
+(2, 'FC24', 50, 120, '', 'aejrbhiewtb', 'ps4', '2023'),
+(3, 'Resdent evil', 500, 50, '', 'davfdv dsvfd', 'pc', '2016');
+
 -- --------------------------------------------------------
 
 --
@@ -91,6 +109,14 @@ CREATE TABLE `role` (
   `description` varchar(60) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `role`
+--
+
+INSERT INTO `role` (`role_id`, `name`, `description`) VALUES
+(1, 'admin', 'admin'),
+(2, 'user', 'user');
+
 -- --------------------------------------------------------
 
 --
@@ -102,9 +128,18 @@ CREATE TABLE `user` (
   `email` varchar(40) NOT NULL,
   `pwd` varchar(40) NOT NULL,
   `username` varchar(20) NOT NULL,
-  `adresses` int(11) NOT NULL,
-  `role_id` int(11) NOT NULL
+  `Billing_adress` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL,
+  `shipping_address` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`id`, `email`, `pwd`, `username`, `Billing_adress`, `role_id`, `shipping_address`) VALUES
+(2, 'chahinehouidhek2@gmail.com', 'Chhca1920', 'chahine', 1, 1, 0),
+(3, 'safwenhouidhek@gmail.com', 'safou', 'safwen', 2, 2, 0);
 
 --
 -- Indexes for dumped tables
@@ -120,7 +155,8 @@ ALTER TABLE `addresses`
 -- Indexes for table `order`
 --
 ALTER TABLE `order`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_user` (`id_user`);
 
 --
 -- Indexes for table `order_has_product`
@@ -148,7 +184,7 @@ ALTER TABLE `role`
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_role` (`role_id`),
-  ADD KEY `fk_address` (`adresses`);
+  ADD KEY `fk_address` (`Billing_adress`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -158,7 +194,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `order`
@@ -170,23 +206,29 @@ ALTER TABLE `order`
 -- AUTO_INCREMENT for table `produit`
 --
 ALTER TABLE `produit`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `role`
 --
 ALTER TABLE `role`
-  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `order`
+--
+ALTER TABLE `order`
+  ADD CONSTRAINT `fk_user` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `order_has_product`
@@ -199,7 +241,7 @@ ALTER TABLE `order_has_product`
 -- Constraints for table `user`
 --
 ALTER TABLE `user`
-  ADD CONSTRAINT `fk_address` FOREIGN KEY (`adresses`) REFERENCES `addresses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_address` FOREIGN KEY (`Billing_adress`) REFERENCES `addresses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
